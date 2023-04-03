@@ -13,21 +13,21 @@ import com.badlogic.gdx.utils.viewport.Viewport;
 
 public class PlayScreen implements Screen {
     private MarioGame game;
-    private Texture texture;
     private OrthographicCamera camera;
     private Viewport viewport;
+    private Hud hud;
 
     public PlayScreen(MarioGame game) {
         this.game = game;
-        texture = new Texture(Gdx.files.internal("badlogic.jpg"));
         camera = new OrthographicCamera();
+        hud = new Hud(game.getBath());
         //rozciaga sie
 //        viewport = new StretchViewport(GameParams.WIDTH,GameParams.HEIGHT,camera);
         //pokazuje więcej świata gry
 //        viewport = new ScreenViewport(camera);
         //pokazuje ciemne bary
         //zachowuje aspect ratio
-        viewport = new FitViewport(GameParams.WIDTH,GameParams.HEIGHT,camera);
+        viewport = new FitViewport(GameParams.V_WIDTH,GameParams.V_HEIGHT,camera);
     }
 
     @Override
@@ -39,10 +39,9 @@ public class PlayScreen implements Screen {
     public void render(float delta) {
         camera.update();
         SpriteBatch batch = game.getBath();
-        batch.setProjectionMatrix(camera.combined);
-        batch.begin();
-        batch.draw(texture,0,0);
-        batch.end();
+        //move to render method
+        batch.setProjectionMatrix(hud.getStage().getCamera().combined); // ?
+        hud.getStage().draw();
     }
 
     @Override
