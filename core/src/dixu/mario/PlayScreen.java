@@ -3,12 +3,11 @@ package dixu.mario;
 import com.badlogic.gdx.Gdx;
 import com.badlogic.gdx.Screen;
 import com.badlogic.gdx.graphics.OrthographicCamera;
-import com.badlogic.gdx.graphics.Texture;
 import com.badlogic.gdx.graphics.g2d.SpriteBatch;
-import com.badlogic.gdx.scenes.scene2d.Stage;
+import com.badlogic.gdx.maps.tiled.TiledMap;
+import com.badlogic.gdx.maps.tiled.TmxMapLoader;
+import com.badlogic.gdx.maps.tiled.renderers.OrthogonalTiledMapRenderer;
 import com.badlogic.gdx.utils.viewport.FitViewport;
-import com.badlogic.gdx.utils.viewport.ScreenViewport;
-import com.badlogic.gdx.utils.viewport.StretchViewport;
 import com.badlogic.gdx.utils.viewport.Viewport;
 
 public class PlayScreen implements Screen {
@@ -16,6 +15,9 @@ public class PlayScreen implements Screen {
     private OrthographicCamera camera;
     private Viewport viewport;
     private Hud hud;
+    private TmxMapLoader mapLoader;
+    private TiledMap map;
+    private OrthogonalTiledMapRenderer renderer;
 
     public PlayScreen(MarioGame game) {
         this.game = game;
@@ -27,9 +29,13 @@ public class PlayScreen implements Screen {
 //        viewport = new ScreenViewport(camera);
         //pokazuje ciemne bary
         //zachowuje aspect ratio
-        viewport = new FitViewport(GameParams.V_WIDTH,GameParams.V_HEIGHT,camera);
-    }
+        viewport = new FitViewport(GameParams.V_WIDTH, GameParams.V_HEIGHT, camera);
 
+        mapLoader = new TmxMapLoader();
+        map = mapLoader.load("map.tmx");
+        renderer = new OrthogonalTiledMapRenderer(map);
+        camera.position.set(viewport.getWorldWidth() / 2f, viewport.getWorldHeight() / 2f, 0);
+    }
     @Override
     public void show() {
 
@@ -37,16 +43,30 @@ public class PlayScreen implements Screen {
 
     @Override
     public void render(float delta) {
-        camera.update();
+        update(delta);
+        renderer.render();
         SpriteBatch batch = game.getBath();
         //move to render method
         batch.setProjectionMatrix(hud.getStage().getCamera().combined); // ?
         hud.getStage().draw();
     }
 
+    public void update(float delta) {
+        handleInput(delta);
+        camera.update();
+        renderer.setView(camera); // only render what camera shows
+    }
+
+    private void handleInput(float delta) {
+        if (Gdx.input.isTouched()) {
+            camera.position.x += 100 * delta;
+        }
+    }
+
+
     @Override
     public void resize(int width, int height) {
-        viewport.update(width,height);
+        viewport.update(width, height);
     }
 
     @Override
