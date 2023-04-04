@@ -51,7 +51,7 @@ public class Hud {
         table.row();
         table.add(scoreLabel).expandX();
         table.add(levelLabel).expandX();
-        table.add(countodownLabel).expand();
+        table.add(countodownLabel).expandX();
 
         stage.addActor(table);
 
